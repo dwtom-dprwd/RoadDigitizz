@@ -6,7 +6,7 @@
 name=RoadDigitizz
 qgisMinimumVersion=3.34
 description=Interactive road digitizer with automatic road polygon generation
-version=0.9.1
+version=0.9.2
 author=Thomas UTM
 email=dwtom.dprwd@gmail.com
 

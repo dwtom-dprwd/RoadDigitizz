@@ -109,7 +109,8 @@ class BufferWithCenterLine:
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None,
+    ):
 
         """Add a toolbar icon to the toolbar.
 

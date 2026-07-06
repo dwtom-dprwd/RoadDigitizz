@@ -142,7 +142,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         self.points.pop()
 
         print("Undo vertex")
-    
+
     def snapPoint(self, pos):
 
         snappingUtils = self.canvas.snappingUtils()
