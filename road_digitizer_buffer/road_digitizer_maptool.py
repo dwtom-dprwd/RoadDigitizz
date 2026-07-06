@@ -2,7 +2,6 @@ from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
 from qgis.core import QgsWkbTypes
 from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsGeometry
-from qgis.core import QgsPointXY
 from qgis.core import QgsFeature
 from qgis.core import QgsCoordinateTransform
 from qgis.core import QgsProject
@@ -51,7 +50,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         }
 
         return mapping.get(self.capStyle, Qgis.EndCapStyle.Flat)
-    
+
     def getJoinStyle(self):
 
         mapping = {
@@ -64,7 +63,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
             self.joinStyle,
             Qgis.JoinStyle.Round
         )
-    
+
     def setWidth(self, width):
 
         self.width = width
@@ -103,7 +102,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         elif event.button() == Qt.RightButton:
 
             self.finishDigitizing()
-            
+
     def canvasMoveEvent(self, event):
 
         point = self.snapPoint(event.pos())
@@ -128,13 +127,12 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
             return
 
         super().keyPressEvent(event)
-    
+
     def addVertex(self, point):
-        
+
         self.points.append(point)
 
         self.rubberBand.addPoint(point)
-
 
     def undoLastVertex(self):
 
@@ -173,8 +171,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         self.resetPreview()
 
         print("Digitizing Finished")
-    
-    
+
     def saveCenterLine(self):
 
         layer_points = self.getLayerPoints()
@@ -197,7 +194,6 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         self.canvas.refresh()
 
-
     def savePolygon(self):
 
         canvas_line = QgsGeometry.fromPolylineXY(self.points)
@@ -219,7 +215,6 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         result = self.polygon_layer.addFeature(feature)
 
         print("Polygon addFeature:", result)
-
 
     def getLayerPoints(self):
         """
@@ -271,7 +266,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         geom.transform(transform)
 
         return geom
-    
+
     def resetPreview(self):
 
         self.points.clear()
@@ -279,7 +274,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         self.rubberBand.reset(QgsWkbTypes.LineGeometry)
 
         self.bufferBand.reset(QgsWkbTypes.PolygonGeometry)
-    
+
     def updateLinePreview(self, tempPoint):
 
         self.rubberBand.reset(QgsWkbTypes.LineGeometry)
@@ -288,7 +283,6 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
             self.rubberBand.addPoint(p)
 
         self.rubberBand.addPoint(tempPoint)
-
 
     def updateBufferPreview(self, tempPoint):
 

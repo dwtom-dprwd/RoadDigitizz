@@ -6,26 +6,26 @@
 name=RoadDigitizz
 qgisMinimumVersion=3.34
 description=Interactive road digitizer with automatic road polygon generation
-version=0.9.0
+version=0.9.1
 author=Thomas UTM
 email=dwtom.dprwd@gmail.com
 
 about=Digitizes road centerlines and automatically generates buffer zones in a single workflow. Plugin untuk mempercepat digitasi garis jalan sekaligus membuat area buffer secara otomatis dalam satu klik
 
-tracker=
-repository=
+tracker=https://github.com/dwtom-dprwd/RoadDigitizz/issues
+repository=https://github.com/dwtom-dprwd/RoadDigitizz
 # End of mandatory metadata
 
 # Recommended items:
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-# changelog=Initial public beta release with automatic road polygon generation, live preview, adjustable width, cap style, join style, project snapping integration, snap indicator and undo support.
+# changelog=Version 0.9.1 - Removed unnecessary scripts folder, removed unused imports, cleaned up formatting and packaging.
 
 # Tags are comma separated with spaces allowed
 tags=road,digitizing,buffer,centerline,transportation
 
-homepage=
+homepage=https://github.com/dwtom-dprwd/RoadDigitizz
 category=Vector
 icon=icon.png
 # experimental flag

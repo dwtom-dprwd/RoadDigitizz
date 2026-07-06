@@ -11,3 +11,10 @@
 - Project Snapping
 - Snap Indicator
 - Undo
+
+## Version 0.9.1
+
+- Removed unnecessary scripts folder from plugin package.
+- Removed unused imports.
+- Removed trailing whitespace and excessive blank lines.
+- General code cleanup.

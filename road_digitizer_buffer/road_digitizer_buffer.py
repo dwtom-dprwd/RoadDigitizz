@@ -76,11 +76,11 @@ class BufferWithCenterLine:
 
         self.toolbar = self.iface.addToolBar("RoadDigitizz")
         self.toolbar.setObjectName("RoadDigitizz")
-       
+
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
-        
+
         self.line_layer = None
         self.polygon_layer = None
 
@@ -99,7 +99,6 @@ class BufferWithCenterLine:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('BufferWithCenterLine', message)
 
-
     def add_action(
         self,
         icon_path,
@@ -111,6 +110,7 @@ class BufferWithCenterLine:
         status_tip=None,
         whats_this=None,
         parent=None):
+
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -183,8 +183,8 @@ class BufferWithCenterLine:
             text=self.tr(u'Road Digitizz'),
             callback=self.run,
             parent=self.iface.mainWindow())
-        
-                # Width SpinBox
+
+        # Width SpinBox
         self.widthSpin = QDoubleSpinBox()
 
         self.widthSpin.setDecimals(1)
@@ -206,7 +206,7 @@ class BufferWithCenterLine:
         self.capCombo.setToolTip("Buffer Cap Style")
 
         self.toolbar.addWidget(self.capCombo)
-        
+
         # Join Style
         self.joinCombo = QComboBox()
 
@@ -243,7 +243,6 @@ class BufferWithCenterLine:
         if hasattr(self, "map_tool") and self.map_tool:
             self.map_tool.setJoinStyle(text)
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -251,7 +250,7 @@ class BufferWithCenterLine:
                 self.tr(u'&RoadDigitizz'),
                 action)
             self.iface.removeToolBarIcon(action)
-            
+
         del self.toolbar
 
     def populate_layers(self):
@@ -286,7 +285,7 @@ class BufferWithCenterLine:
                 index = self.dlg.cmbPolygonLayer.findData(self.polygon_layer)
                 if index >= 0:
                     self.dlg.cmbPolygonLayer.setCurrentIndex(index)
-    
+
     def prepare_digitizing(self):
 
         self.line_layer = self.dlg.cmbLineLayer.currentData()
@@ -319,7 +318,7 @@ class BufferWithCenterLine:
                 "Preview buffer mungkin tidak akurat.\n\n"
                 "Disarankan menggunakan Projected CRS."
             )
-            
+
         # Aktifkan Map Tool
         self.map_tool = RoadDigitizerMapTool(
             self.iface.mapCanvas(),
