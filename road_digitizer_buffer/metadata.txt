@@ -1,0 +1,45 @@
+# This file contains metadata for your plugin.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=RoadDigitizz
+qgisMinimumVersion=3.34
+description=Interactive road digitizer with automatic road polygon generation
+version=0.9.0
+author=Thomas UTM
+email=dwtom.dprwd@gmail.com
+
+about=Digitizes road centerlines and automatically generates buffer zones in a single workflow. Plugin untuk mempercepat digitasi garis jalan sekaligus membuat area buffer secara otomatis dalam satu klik
+
+tracker=
+repository=
+# End of mandatory metadata
+
+# Recommended items:
+
+hasProcessingProvider=no
+# Uncomment the following line and add your changelog:
+# changelog=Initial public beta release with automatic road polygon generation, live preview, adjustable width, cap style, join style, project snapping integration, snap indicator and undo support.
+
+# Tags are comma separated with spaces allowed
+tags=road,digitizing,buffer,centerline,transportation
+
+homepage=
+category=Vector
+icon=icon.png
+# experimental flag
+experimental=True
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
+# Since QGIS 3.8, a comma separated list of plugins to be installed
+# (or upgraded) can be specified.
+# Check the documentation for more information.
+# plugin_dependencies=
+
+
+# If the plugin can run on QGIS Server.
+server=False
+
