@@ -23,6 +23,7 @@ Interactive road digitizer for QGIS.
 5. Left Click = Add Vertex.
 6. Backspace = Undo.
 7. Right Click = Finish.
+8. Esc = Cancel.
 
 ## Requirements
 
@@ -30,4 +31,4 @@ QGIS 3.34+
 
 ## Version
 
-0.9.0 Beta
+0.9.3 Beta

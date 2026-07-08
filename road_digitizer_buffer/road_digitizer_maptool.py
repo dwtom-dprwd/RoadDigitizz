@@ -1,13 +1,15 @@
-from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand
+from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand, QgsSnapIndicator
 from qgis.core import QgsWkbTypes
 from qgis.PyQt.QtCore import Qt
-from qgis.core import QgsGeometry
-from qgis.core import QgsFeature
-from qgis.core import QgsCoordinateTransform
-from qgis.core import QgsProject
-from qgis.core import Qgis
-from qgis.core import QgsPointLocator
-from qgis.gui import QgsSnapIndicator
+from qgis.core import (
+    QgsGeometry,
+    QgsFeature,
+    QgsCoordinateTransform,
+    QgsProject,
+    Qgis,
+    QgsPointLocator
+)
+from qgis.PyQt.QtGui import QColor
 
 
 class RoadDigitizerMapTool(QgsMapToolEmitPoint):
@@ -28,10 +30,26 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
             QgsWkbTypes.LineGeometry
         )
 
+        self.previewBand = QgsRubberBand(
+            self.canvas,
+            QgsWkbTypes.LineGeometry
+        )
+
         self.bufferBand = QgsRubberBand(
             self.canvas,
             QgsWkbTypes.PolygonGeometry
         )
+
+        self.rubberBand.setColor(QColor(255, 0, 0))
+        self.rubberBand.setWidth(1)
+
+        self.previewBand.setColor(QColor(255, 0, 0))
+        self.previewBand.setWidth(1)
+        self.previewBand.setLineStyle(Qt.DashLine)
+
+        self.bufferBand.setFillColor(QColor(255, 0, 0, 40))
+        self.bufferBand.setStrokeColor(QColor(255, 0, 0))
+        self.bufferBand.setWidth(1)
 
         self.points = []
 
@@ -75,16 +93,12 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         self.capStyle = capStyle
 
-        print("Cap Style:", capStyle)
-
         if self.currentMousePoint is not None:
             self.updateBufferPreview(self.currentMousePoint)
 
     def setJoinStyle(self, joinStyle):
 
         self.joinStyle = joinStyle
-
-        print("Join Style:", joinStyle)
 
         if self.currentMousePoint is not None:
             self.updateBufferPreview(self.currentMousePoint)
@@ -94,8 +108,6 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         if event.button() == Qt.LeftButton:
 
             point = self.snapPoint(event.pos())
-
-            print("Clicked:", point)
 
             self.addVertex(point)
 
@@ -126,6 +138,14 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
             return
 
+        elif event.key() == Qt.Key_Escape:
+
+            self.cancelDigitizing()
+
+            event.accept()
+
+            return
+
         super().keyPressEvent(event)
 
     def addVertex(self, point):
@@ -136,12 +156,27 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
     def undoLastVertex(self):
 
-        if not self.points:
+        if len(self.points) <= 1:
+
             return
 
         self.points.pop()
 
-        print("Undo vertex")
+        self.rubberBand.reset(QgsWkbTypes.LineGeometry)
+
+        for p in self.points:
+            self.rubberBand.addPoint(p)
+
+        self.bufferBand.reset(QgsWkbTypes.PolygonGeometry)
+
+        if len(self.points) >= 2 and self.currentMousePoint is not None:
+            self.updateBufferPreview(self.currentMousePoint)
+
+    def cancelDigitizing(self):
+
+        self.resetPreview()
+
+        self.currentMousePoint = None
 
     def snapPoint(self, pos):
 
@@ -170,16 +205,11 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         self.resetPreview()
 
-        print("Digitizing Finished")
-
     def saveCenterLine(self):
 
         layer_points = self.getLayerPoints()
 
         geometry = QgsGeometry.fromPolylineXY(layer_points)
-
-        print("Geometry:")
-        print(geometry.asWkt())
 
         feature = QgsFeature(self.line_layer.fields())
 
@@ -224,7 +254,6 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         canvas_crs = self.canvas.mapSettings().destinationCrs()
         layer_crs = self.line_layer.crs()
 
-        # Jika CRS sama, tidak perlu transformasi
         if canvas_crs == layer_crs:
             return self.points
 
@@ -238,9 +267,6 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         for pt in self.points:
             layer_points.append(transform.transform(pt))
-
-        print("Canvas CRS :", canvas_crs.authid())
-        print("Layer CRS  :", layer_crs.authid())
 
         return layer_points
 

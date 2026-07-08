@@ -276,21 +276,48 @@ class BufferWithCenterLine:
                 self.dlg.cmbPolygonLayer.addItem(layer.name(), layer)
 
             # Restore last selected line layer
-            if self.line_layer:
-                index = self.dlg.cmbLineLayer.findData(self.line_layer)
-                if index >= 0:
-                    self.dlg.cmbLineLayer.setCurrentIndex(index)
+            try:
+                if self.line_layer is not None:
+                    index = self.dlg.cmbLineLayer.findData(self.line_layer)
+                    if index >= 0:
+                        self.dlg.cmbLineLayer.setCurrentIndex(index)
+                    else:
+                        self.line_layer = None
+            except RuntimeError:
+                self.line_layer = None
 
             # Restore last selected polygon layer
-            if self.polygon_layer:
-                index = self.dlg.cmbPolygonLayer.findData(self.polygon_layer)
-                if index >= 0:
-                    self.dlg.cmbPolygonLayer.setCurrentIndex(index)
+            try:
+                if self.polygon_layer is not None:
+                    index = self.dlg.cmbPolygonLayer.findData(self.polygon_layer)
+                    if index >= 0:
+                        self.dlg.cmbPolygonLayer.setCurrentIndex(index)
+                    else:
+                        self.polygon_layer = None
+            except RuntimeError:
+                self.polygon_layer = None
 
     def prepare_digitizing(self):
 
         self.line_layer = self.dlg.cmbLineLayer.currentData()
         self.polygon_layer = self.dlg.cmbPolygonLayer.currentData()
+
+        # Validasi layer dipilih
+        if self.line_layer is None:
+            QMessageBox.warning(
+                self.dlg,
+                "RoadDigitizz",
+                "Please select a centerline layer."
+            )
+            return
+
+        if self.polygon_layer is None:
+            QMessageBox.warning(
+                self.dlg,
+                "RoadDigitizz",
+                "Please select a polygon layer."
+            )
+            return
 
         line_layer = self.line_layer
         polygon_layer = self.polygon_layer
@@ -311,7 +338,6 @@ class BufferWithCenterLine:
         canvas_crs = self.iface.mapCanvas().mapSettings().destinationCrs()
 
         if canvas_crs.isGeographic():
-
             QMessageBox.warning(
                 self.iface.mainWindow(),
                 "RoadDigitizz",
@@ -327,6 +353,7 @@ class BufferWithCenterLine:
             polygon_layer,
             width
         )
+
         self.iface.mapCanvas().setMapTool(self.map_tool)
 
         print("Map Tool Activated")
