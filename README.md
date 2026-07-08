@@ -31,4 +31,4 @@ QGIS 3.34+
 
 ## Version
 
-0.9.3 Beta
+0.9.4 Beta
