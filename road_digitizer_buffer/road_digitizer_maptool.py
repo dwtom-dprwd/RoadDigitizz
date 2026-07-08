@@ -215,9 +215,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         feature.setGeometry(geometry)
 
-        result = self.line_layer.addFeature(feature)
-
-        print("addFeature:", result)
+        self.line_layer.addFeature(feature)
 
         self.line_layer.updateExtents()
         self.line_layer.triggerRepaint()
@@ -242,9 +240,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         feature.setGeometry(buffer)
 
-        result = self.polygon_layer.addFeature(feature)
-
-        print("Polygon addFeature:", result)
+        self.polygon_layer.addFeature(feature)
 
     def getLayerPoints(self):
         """

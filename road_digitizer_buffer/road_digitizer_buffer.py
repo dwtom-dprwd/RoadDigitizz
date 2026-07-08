@@ -84,6 +84,9 @@ class BufferWithCenterLine:
         self.line_layer = None
         self.polygon_layer = None
 
+        self.last_line_layer_id = None
+        self.last_polygon_layer_id = None
+
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -178,7 +181,11 @@ class BufferWithCenterLine:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = os.path.join(os.path.dirname(__file__), 'icon.png')
+        icon_path = os.path.join(
+            os.path.dirname(__file__),
+            "toolbar_icon.png"
+        )
+
         self.add_action(
             icon_path,
             text=self.tr(u'Road Digitizz'),
@@ -260,6 +267,16 @@ class BufferWithCenterLine:
         self.dlg.cmbLineLayer.clear()
         self.dlg.cmbPolygonLayer.clear()
 
+        self.dlg.cmbLineLayer.addItem(
+            "-- Select Centerline Layer --",
+            None
+        )
+
+        self.dlg.cmbPolygonLayer.addItem(
+            "-- Select Polygon Layer --",
+            None
+        )
+
         layers = QgsProject.instance().mapLayers().values()
 
         for layer in layers:
@@ -275,27 +292,39 @@ class BufferWithCenterLine:
             elif geom == QgsWkbTypes.PolygonGeometry:
                 self.dlg.cmbPolygonLayer.addItem(layer.name(), layer)
 
-            # Restore last selected line layer
-            try:
-                if self.line_layer is not None:
-                    index = self.dlg.cmbLineLayer.findData(self.line_layer)
-                    if index >= 0:
-                        self.dlg.cmbLineLayer.setCurrentIndex(index)
-                    else:
-                        self.line_layer = None
-            except RuntimeError:
-                self.line_layer = None
+        # Restore last selected line layer
+        found = False
 
-            # Restore last selected polygon layer
-            try:
-                if self.polygon_layer is not None:
-                    index = self.dlg.cmbPolygonLayer.findData(self.polygon_layer)
-                    if index >= 0:
-                        self.dlg.cmbPolygonLayer.setCurrentIndex(index)
-                    else:
-                        self.polygon_layer = None
-            except RuntimeError:
-                self.polygon_layer = None
+        if self.last_line_layer_id:
+
+            for i in range(self.dlg.cmbLineLayer.count()):
+
+                layer = self.dlg.cmbLineLayer.itemData(i)
+
+                if layer and layer.id() == self.last_line_layer_id:
+                    self.dlg.cmbLineLayer.setCurrentIndex(i)
+                    found = True
+                    break
+
+            if not found:
+                self.last_line_layer_id = None
+
+        # Restore last selected polygon layer
+        found = False
+
+        if self.last_polygon_layer_id:
+
+            for i in range(self.dlg.cmbPolygonLayer.count()):
+
+                layer = self.dlg.cmbPolygonLayer.itemData(i)
+
+                if layer and layer.id() == self.last_polygon_layer_id:
+                    self.dlg.cmbPolygonLayer.setCurrentIndex(i)
+                    found = True
+                    break
+
+            if not found:
+                self.last_polygon_layer_id = None
 
     def prepare_digitizing(self):
 
@@ -319,14 +348,12 @@ class BufferWithCenterLine:
             )
             return
 
+        self.last_line_layer_id = self.line_layer.id()
+        self.last_polygon_layer_id = self.polygon_layer.id()
+
         line_layer = self.line_layer
         polygon_layer = self.polygon_layer
         width = self.widthSpin.value()
-
-        print("===== RoadDigitizz =====")
-        print("Line Layer :", line_layer.name())
-        print("Polygon Layer :", polygon_layer.name())
-        print("Width :", width)
 
         # Pastikan layer dalam mode edit
         if not line_layer.isEditable():
@@ -355,8 +382,6 @@ class BufferWithCenterLine:
         )
 
         self.iface.mapCanvas().setMapTool(self.map_tool)
-
-        print("Map Tool Activated")
 
     def run(self):
         """Run method that performs all the real work"""

@@ -6,7 +6,7 @@
 name=RoadDigitizz
 qgisMinimumVersion=3.34
 description=Interactive road digitizer with automatic road polygon generation
-version=0.9.3
+version=0.9.4
 author=Thomas UTM
 email=dwtom.dprwd@gmail.com
 
@@ -20,14 +20,13 @@ repository=https://github.com/dwtom-dprwd/RoadDigitizz
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=0.9.3
-    - Improved digitizing workflow.
-    - Added ESC shortcut to cancel digitizing.
-    - Improved Undo behavior.
-    - Improved centerline and buffer preview.
-    - Added validation for missing line and polygon layers.
-    - Automatically enables editing mode before digitizing.
-    - Minor bug fixes and code cleanup.
+changelog=Version 0.9.4
+    - Added placeholder ("Select Layer") for centerline and polygon layer selection.
+    - Automatically clears invalid layer selections when layers are removed.
+    - Improved validation before starting digitizing.
+    - Enhanced plugin stability when referenced layers are deleted.
+    - Updated toolbar icon for better visibility.
+    - Minor code cleanup and usability improvements.
 
 
 # Tags are comma separated with spaces allowed

@@ -30,3 +30,11 @@ Version 0.9.3
 - Added validation for required line and polygon layers.
 - Automatically enables editing mode before digitizing.
 - Minor bug fixes and code cleanup.
+
+Version 0.9.4
+- Added placeholder ("Select Layer") for centerline and polygon layer selection.
+- Automatically clears invalid layer selections when layers are removed.
+- Improved validation before starting digitizing.
+- Enhanced plugin stability when referenced layers are deleted.
+- Updated toolbar icon for better visibility.
+- Minor code cleanup and usability improvements.
