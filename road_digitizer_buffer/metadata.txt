@@ -5,12 +5,23 @@
 [general]
 name=RoadDigitizz
 qgisMinimumVersion=3.34
-description=Interactive road digitizer with automatic road polygon generation
-version=0.9.4
+description=Interactive road digitizing with automatic centerline and polygon creation using real-time buffer preview.
+version=0.9.5
 author=Thomas UTM
 email=dwtom.dprwd@gmail.com
 
-about=Digitizes road centerlines and automatically generates buffer zones in a single workflow. Plugin untuk mempercepat digitasi garis jalan sekaligus membuat area buffer secara otomatis dalam satu klik
+about=RoadDigitizz: Smart Road Digitizing for QGIS
+
+    Draw a road centerline and let the plugin automatically create both the centerline and its road polygon, with a real-time buffer preview.
+    Perfect for transportation mapping, urban planning, and GIS data creation.
+
+    • Real-time buffer preview
+    • Configurable road width
+    • Multiple cap & join styles
+    • Snap support & undo
+    • Automatic CRS handling
+
+    Digitize once, get both layers instantly.
 
 tracker=https://github.com/dwtom-dprwd/RoadDigitizz/issues
 repository=https://github.com/dwtom-dprwd/RoadDigitizz
@@ -20,23 +31,29 @@ repository=https://github.com/dwtom-dprwd/RoadDigitizz
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=Version 0.9.4
-    - Added placeholder ("Select Layer") for centerline and polygon layer selection.
-    - Automatically clears invalid layer selections when layers are removed.
-    - Improved validation before starting digitizing.
-    - Enhanced plugin stability when referenced layers are deleted.
-    - Updated toolbar icon for better visibility.
-    - Minor code cleanup and usability improvements.
+changelog=0.9.5
+
+    New
+    - Improved CRS handling.
+
+    Fixed
+    - Fixed preview cleanup when restarting digitizing.
+    - Improved toolbar icon.
+
+    Improved
+    - Layer validation.
+    - Remember last selected layers.
+    - Code cleanup.
 
 
 # Tags are comma separated with spaces allowed
-tags=road,digitizing,buffer,centerline,transportation,polygon,mapping
+tags=road,roads,digitizing,editing,buffer,centerline,transportation,polygon,mapping
 
 homepage=https://github.com/dwtom-dprwd/RoadDigitizz
 category=Vector
 icon=icon.png
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

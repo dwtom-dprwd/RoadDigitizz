@@ -1,40 +1,14 @@
-# Changelog
+0.9.5
 
-Version 0.9.0
-- Initial public beta
-- Automatic road polygon
-- Live preview
-- Width Toolbar
-- Cap Style
-- Join Style
-- Project Snapping
-- Snap Indicator
-- Undo
+New
+- Improved CRS-aware distance handling.
 
-Version 0.9.1
-- Removed unnecessary scripts folder from plugin package.
-- Removed unused imports.
-- Removed trailing whitespace and excessive blank lines.
-- General code cleanup.
+Fixed
+- Fixed preview cleanup when restarting digitizing.
+- Improved toolbar icon visibility.
+- Improved layer validation before digitizing.
 
-Version 0.9.2
-- Fixed E125 indentation warning.
-- Removed trailing whitespace.
-- Code style cleanup.
-
-Version 0.9.3
-- Improved digitizing workflow.
-- Added ESC shortcut to cancel digitizing.
-- Improved Undo behavior.
-- Improved centerline and buffer preview.
-- Added validation for required line and polygon layers.
-- Automatically enables editing mode before digitizing.
-- Minor bug fixes and code cleanup.
-
-Version 0.9.4
-- Added placeholder ("Select Layer") for centerline and polygon layer selection.
-- Automatically clears invalid layer selections when layers are removed.
-- Improved validation before starting digitizing.
-- Enhanced plugin stability when referenced layers are deleted.
-- Updated toolbar icon for better visibility.
-- Minor code cleanup and usability improvements.
+Improved
+- Remember last selected layers.
+- Automatically reset invalid layer selections when layers are removed.
+- General code cleanup and stability improvements.

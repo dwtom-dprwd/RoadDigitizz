@@ -7,7 +7,8 @@ from qgis.core import (
     QgsCoordinateTransform,
     QgsProject,
     Qgis,
-    QgsPointLocator
+    QgsPointLocator,
+    QgsDistanceArea
 )
 from qgis.PyQt.QtGui import QColor
 
@@ -30,11 +31,6 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
             QgsWkbTypes.LineGeometry
         )
 
-        self.previewBand = QgsRubberBand(
-            self.canvas,
-            QgsWkbTypes.LineGeometry
-        )
-
         self.bufferBand = QgsRubberBand(
             self.canvas,
             QgsWkbTypes.PolygonGeometry
@@ -42,10 +38,6 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         self.rubberBand.setColor(QColor(255, 0, 0))
         self.rubberBand.setWidth(1)
-
-        self.previewBand.setColor(QColor(255, 0, 0))
-        self.previewBand.setWidth(1)
-        self.previewBand.setLineStyle(Qt.DashLine)
 
         self.bufferBand.setFillColor(QColor(255, 0, 0, 40))
         self.bufferBand.setStrokeColor(QColor(255, 0, 0))
@@ -58,6 +50,15 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         self.currentMousePoint = None
 
         self.canvas.setFocus()
+
+        # Distance calculator
+        self.dist_calculator = QgsDistanceArea()
+        self._updateDistanceCalculator()
+
+        # Update jika CRS project berubah
+        QgsProject.instance().crsChanged.connect(
+            self._updateDistanceCalculator
+        )
 
     def getCapStyle(self):
 
@@ -177,6 +178,9 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         self.resetPreview()
 
         self.currentMousePoint = None
+        self.snapIndicator.setMatch(
+            QgsPointLocator.Match()
+        )
 
     def snapPoint(self, pos):
 
@@ -205,6 +209,10 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         self.resetPreview()
 
+        self.snapIndicator.setMatch(
+            QgsPointLocator.Match()
+        )
+
     def saveCenterLine(self):
 
         layer_points = self.getLayerPoints()
@@ -226,8 +234,12 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         canvas_line = QgsGeometry.fromPolylineXY(self.points)
 
+        buffer_distance = self.convert_meters_to_canvas_units(
+            self.width / 2
+            )
+
         buffer = canvas_line.buffer(
-            self.width / 2,
+            buffer_distance,
             8,
             self.getCapStyle(),
             self.getJoinStyle(),
@@ -237,9 +249,7 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         buffer = self.transformGeometryToLayer(buffer)
 
         feature = QgsFeature(self.polygon_layer.fields())
-
         feature.setGeometry(buffer)
-
         self.polygon_layer.addFeature(feature)
 
     def getLayerPoints(self):
@@ -265,6 +275,30 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
             layer_points.append(transform.transform(pt))
 
         return layer_points
+
+    # Cache QgsDistanceArea for future CRS-aware calculations.
+    # Updated whenever the project CRS changes.
+    def _updateDistanceCalculator(self):
+        """Perbarui dist_calculator dengan CRS canvas dan ellipsoid project"""
+        project = QgsProject.instance()
+        canvas_crs = self.canvas.mapSettings().destinationCrs()
+
+        self.dist_calculator.setSourceCrs(
+            canvas_crs,
+            project.transformContext()
+        )
+
+        self.dist_calculator.setEllipsoid(
+            project.ellipsoid()
+        )
+
+    def convert_meters_to_canvas_units(self, meters):
+        canvas_crs = self.canvas.mapSettings().destinationCrs()
+
+        return self.dist_calculator.convertLengthMeasurement(
+            meters,
+            canvas_crs.mapUnits()
+        )
 
     def transformGeometryToLayer(self, geometry):
         """
@@ -316,8 +350,12 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
 
         line = QgsGeometry.fromPolylineXY(points)
 
+        buffer_distance = self.convert_meters_to_canvas_units(
+            self.width / 2
+        )
+
         polygon = line.buffer(
-            self.width / 2,
+            buffer_distance,
             8,
             self.getCapStyle(),
             self.getJoinStyle(),

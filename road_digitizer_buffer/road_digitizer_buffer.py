@@ -195,7 +195,7 @@ class BufferWithCenterLine:
         # Width SpinBox
         self.widthSpin = QDoubleSpinBox()
 
-        self.widthSpin.setDecimals(1)
+        self.widthSpin.setDecimals(2)
         self.widthSpin.setMinimum(1)
         self.widthSpin.setMaximum(100)
         self.widthSpin.setSingleStep(0.5)
@@ -362,16 +362,15 @@ class BufferWithCenterLine:
         if not polygon_layer.isEditable():
             polygon_layer.startEditing()
 
-        canvas_crs = self.iface.mapCanvas().mapSettings().destinationCrs()
+        # Bersihkan MapTool sebelumnya jika masih aktif
+        if getattr(self, "map_tool", None):
 
-        if canvas_crs.isGeographic():
-            QMessageBox.warning(
-                self.iface.mainWindow(),
-                "RoadDigitizz",
-                "Project CRS menggunakan Geographic (Degree).\n\n"
-                "Preview buffer mungkin tidak akurat.\n\n"
-                "Disarankan menggunakan Projected CRS."
-            )
+            try:
+                self.map_tool.cancelDigitizing()
+            except Exception:
+                pass
+
+            self.iface.mapCanvas().unsetMapTool(self.map_tool)
 
         # Aktifkan Map Tool
         self.map_tool = RoadDigitizerMapTool(

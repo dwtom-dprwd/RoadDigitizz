@@ -1,34 +1,31 @@
 # RoadDigitizz
 
-Interactive road digitizer for QGIS.
+RoadDigitizz is a QGIS plugin for interactive road digitizing.
+
+Digitize a road centerline once, and RoadDigitizz automatically generates the corresponding road polygon with a real-time buffer preview, making road mapping faster and more consistent.
 
 ## Features
 
-- Automatic road polygon generation
-- Adjustable road width
-- Live buffer preview
-- Cap Style
-- Join Style
-- Project Snapping support
-- Snap Indicator
-- Undo (Backspace)
-- CRS transformation support
-
-## How to use
-
-1. Open RoadDigitizz.
-2. Select centerline layer.
-3. Select polygon layer.
-4. Click OK.
-5. Left Click = Add Vertex.
-6. Backspace = Undo.
-7. Right Click = Finish.
-8. Esc = Cancel.
+- Interactive centerline digitizing
+- Real-time road polygon preview
+- Automatic centerline and polygon creation
+- Configurable road width
+- Cap styles
+- Join styles
+- Snap support
+- Undo last vertex (Backspace)
+- Cancel digitizing (Esc)
+- Remembers the last selected layers
+- Automatic CRS-aware distance handling
 
 ## Requirements
 
-QGIS 3.34+
+QGIS 3.34 or later
 
-## Version
+## Installation
 
-0.9.4 Beta
+Install RoadDigitizz from the QGIS Plugin Repository.
+
+## License
+
+GPL v2 or later.
