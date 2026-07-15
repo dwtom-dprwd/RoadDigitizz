@@ -8,7 +8,7 @@
                              -------------------
         begin                : 2026-07-02
         git sha              : $Format:%H$
-        copyright            : (C) 2026 by Thomas UTM
+        copyright            : (C) 2026 by Dwi Wahyu Utomo
         email                : dwtom.dprwd@gmail.com
  ***************************************************************************/
 
@@ -31,9 +31,9 @@ from qgis.PyQt import QtWidgets
 FORM_CLASS, _ = uic.loadUiType(
     os.path.join(
         os.path.dirname(__file__),
-        'road_digitizer_buffer_dialog_base.ui'),
-    from_imports=True,
-    import_from='road_digitizer_buffer')
+        'road_digitizer_buffer_dialog_base.ui'
+    )
+)
 
 
 class BufferWithCenterLineDialog(QtWidgets.QDialog, FORM_CLASS):

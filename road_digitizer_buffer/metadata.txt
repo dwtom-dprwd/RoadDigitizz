@@ -5,9 +5,10 @@
 [general]
 name=RoadDigitizz
 qgisMinimumVersion=3.34
+qgisMaximumVersion=4.99
 description=Interactive road digitizing with automatic centerline and polygon creation using real-time buffer preview.
-version=0.9.5
-author=Thomas UTM
+version=0.9.6
+author=Dwi Wahyu Utomo
 email=dwtom.dprwd@gmail.com
 
 about=RoadDigitizz: Smart Road Digitizing for QGIS
@@ -31,20 +32,8 @@ repository=https://github.com/dwtom-dprwd/RoadDigitizz
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=0.9.5
-
-    New
-    - Improved CRS handling.
-
-    Fixed
-    - Fixed preview cleanup when restarting digitizing.
-    - Improved toolbar icon.
-
-    Improved
-    - Layer validation.
-    - Remember last selected layers.
-    - Code cleanup.
-
+changelog=0.9.6
+    Added QGIS 4 compatibility. Improved plugin initialization and cleanup. Fixed Cap Style and Join Style persistence.
 
 # Tags are comma separated with spaces allowed
 tags=road,roads,digitizing,editing,buffer,centerline,transportation,polygon,mapping

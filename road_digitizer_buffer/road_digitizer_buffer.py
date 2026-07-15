@@ -8,7 +8,7 @@
                               -------------------
         begin                : 2026-07-02
         git sha              : $Format:%H$
-        copyright            : (C) 2026 by Thomas UTM
+        copyright            : (C) 2026 by Dwi Wahyu Utomo
         email                : dwtom.dprwd@gmail.com
  ***************************************************************************/
 
@@ -36,7 +36,6 @@ from qgis.PyQt.QtWidgets import (
     QComboBox
 )
 
-
 # Import the code for the dialog
 from .road_digitizer_buffer_dialog import BufferWithCenterLineDialog
 from .road_digitizer_maptool import RoadDigitizerMapTool
@@ -47,18 +46,10 @@ class BufferWithCenterLine:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
-        """Constructor.
 
-        :param iface: An interface instance that will be passed to this class
-            which provides the hook by which you can manipulate the QGIS
-            application at run time.
-        :type iface: QgsInterface
-        """
-        # Save reference to the QGIS interface
         self.iface = iface
-        # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
-        # initialize locale
+
         locale = QgsSettings().value('locale/userLocale', QLocale().name())[0:2]
         locale_path = os.path.join(
             self.plugin_dir,
@@ -70,35 +61,22 @@ class BufferWithCenterLine:
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
-        # Declare instance attributes
         self.actions = []
+        self.toolbar_widgets = []
+
         self.menu = self.tr(u'&RoadDigitizz')
 
         self.toolbar = self.iface.addToolBar("RoadDigitizz")
         self.toolbar.setObjectName("RoadDigitizz")
 
-        # Check if plugin was started the first time in current QGIS session
-        # Must be set in initGui() to survive plugin reloads
         self.first_start = None
-
         self.line_layer = None
         self.polygon_layer = None
-
         self.last_line_layer_id = None
         self.last_polygon_layer_id = None
 
-    # noinspection PyMethodMayBeStatic
     def tr(self, message):
-        """Get the translation for a string using Qt translation API.
 
-        We implement this ourselves since we do not inherit QObject.
-
-        :param message: String for translation.
-        :type message: str, QString
-
-        :returns: Translated version of message.
-        :rtype: QString
-        """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('BufferWithCenterLine', message)
 
@@ -175,7 +153,6 @@ class BufferWithCenterLine:
                 action)
 
         self.actions.append(action)
-
         return action
 
     def initGui(self):
@@ -191,10 +168,8 @@ class BufferWithCenterLine:
             text=self.tr(u'Road Digitizz'),
             callback=self.run,
             parent=self.iface.mainWindow())
-
         # Width SpinBox
         self.widthSpin = QDoubleSpinBox()
-
         self.widthSpin.setDecimals(2)
         self.widthSpin.setMinimum(1)
         self.widthSpin.setMaximum(100)
@@ -202,34 +177,31 @@ class BufferWithCenterLine:
         self.widthSpin.setValue(6)
         self.widthSpin.setSuffix(" m")
 
-        self.toolbar.addWidget(self.widthSpin)
+        action = self.toolbar.addWidget(self.widthSpin)
+        self.toolbar_widgets.append(action)
 
         # Cap Style
         self.capCombo = QComboBox()
-
         self.capCombo.addItem("Flat")
         self.capCombo.addItem("Round")
         self.capCombo.addItem("Square")
-
         self.capCombo.setToolTip("Buffer Cap Style")
 
-        self.toolbar.addWidget(self.capCombo)
+        action = self.toolbar.addWidget(self.capCombo)
+        self.toolbar_widgets.append(action)
 
         # Join Style
         self.joinCombo = QComboBox()
-
         self.joinCombo.addItem("Round")
         self.joinCombo.addItem("Miter")
         self.joinCombo.addItem("Bevel")
-
         self.joinCombo.setToolTip("Buffer Join Style")
 
-        self.toolbar.addWidget(self.joinCombo)
+        action = self.toolbar.addWidget(self.joinCombo)
+        self.toolbar_widgets.append(action)
 
         self.joinCombo.currentTextChanged.connect(self.onJoinStyleChanged)
-
         self.capCombo.currentTextChanged.connect(self.onCapStyleChanged)
-
         self.widthSpin.valueChanged.connect(self.onWidthChanged)
 
         # will be set False in run()
@@ -238,7 +210,6 @@ class BufferWithCenterLine:
     def onWidthChanged(self, value):
 
         if hasattr(self, "map_tool") and self.map_tool:
-
             self.map_tool.setWidth(value)
 
     def onCapStyleChanged(self, text):
@@ -253,13 +224,44 @@ class BufferWithCenterLine:
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
+        # 1. Cleanup map tool
+        if getattr(self, "map_tool", None):
+            try:
+                self.map_tool.cleanup()
+            except AttributeError:
+                pass
+
+            self.iface.mapCanvas().unsetMapTool(
+                self.map_tool
+            )
+
+            self.map_tool = None
+
+        # 2. Remove plugin actions
         for action in self.actions:
             self.iface.removePluginMenu(
                 self.tr(u'&RoadDigitizz'),
-                action)
+                action
+            )
+
             self.iface.removeToolBarIcon(action)
 
-        del self.toolbar
+        self.actions.clear()
+
+        # 3. Remove custom toolbar widgets
+        for widget_action in self.toolbar_widgets:
+            self.toolbar.removeAction(widget_action)
+
+        self.toolbar_widgets.clear()
+
+        # 4. Remove toolbar
+        self.iface.mainWindow().removeToolBar(
+            self.toolbar
+        )
+
+        self.toolbar.setParent(None)
+        self.toolbar.deleteLater()
+        self.toolbar = None
 
     def populate_layers(self):
         """Populate Line dan Polygon layer ke ComboBox"""
@@ -271,7 +273,6 @@ class BufferWithCenterLine:
             "-- Select Centerline Layer --",
             None
         )
-
         self.dlg.cmbPolygonLayer.addItem(
             "-- Select Polygon Layer --",
             None
@@ -280,16 +281,13 @@ class BufferWithCenterLine:
         layers = QgsProject.instance().mapLayers().values()
 
         for layer in layers:
-
-            if layer.type() != QgsMapLayer.VectorLayer:
+            if layer.type() != QgsMapLayer.LayerType.VectorLayer:
                 continue
 
             geom = layer.geometryType()
-
-            if geom == QgsWkbTypes.LineGeometry:
+            if geom == QgsWkbTypes.GeometryType.LineGeometry:
                 self.dlg.cmbLineLayer.addItem(layer.name(), layer)
-
-            elif geom == QgsWkbTypes.PolygonGeometry:
+            elif geom == QgsWkbTypes.GeometryType.PolygonGeometry:
                 self.dlg.cmbPolygonLayer.addItem(layer.name(), layer)
 
         # Restore last selected line layer
@@ -298,14 +296,11 @@ class BufferWithCenterLine:
         if self.last_line_layer_id:
 
             for i in range(self.dlg.cmbLineLayer.count()):
-
                 layer = self.dlg.cmbLineLayer.itemData(i)
-
                 if layer and layer.id() == self.last_line_layer_id:
                     self.dlg.cmbLineLayer.setCurrentIndex(i)
                     found = True
                     break
-
             if not found:
                 self.last_line_layer_id = None
 
@@ -313,16 +308,12 @@ class BufferWithCenterLine:
         found = False
 
         if self.last_polygon_layer_id:
-
             for i in range(self.dlg.cmbPolygonLayer.count()):
-
                 layer = self.dlg.cmbPolygonLayer.itemData(i)
-
                 if layer and layer.id() == self.last_polygon_layer_id:
                     self.dlg.cmbPolygonLayer.setCurrentIndex(i)
                     found = True
                     break
-
             if not found:
                 self.last_polygon_layer_id = None
 
@@ -364,13 +355,9 @@ class BufferWithCenterLine:
 
         # Bersihkan MapTool sebelumnya jika masih aktif
         if getattr(self, "map_tool", None):
-
-            try:
+            if self.iface.mapCanvas().mapTool() == self.map_tool:
                 self.map_tool.cancelDigitizing()
-            except Exception:
-                pass
-
-            self.iface.mapCanvas().unsetMapTool(self.map_tool)
+                self.iface.mapCanvas().unsetMapTool(self.map_tool)
 
         # Aktifkan Map Tool
         self.map_tool = RoadDigitizerMapTool(
@@ -378,6 +365,17 @@ class BufferWithCenterLine:
             line_layer,
             polygon_layer,
             width
+        )
+
+        # Sinkronkan semua parameter dari toolbar
+        self.map_tool.setWidth(
+            self.widthSpin.value()
+        )
+        self.map_tool.setCapStyle(
+            self.capCombo.currentText()
+        )
+        self.map_tool.setJoinStyle(
+            self.joinCombo.currentText()
         )
 
         self.iface.mapCanvas().setMapTool(self.map_tool)
@@ -390,8 +388,7 @@ class BufferWithCenterLine:
             self.dlg = BufferWithCenterLineDialog()
 
         self.populate_layers()
-
-        result = self.dlg.exec_()
+        result = self.dlg.exec()
 
         if result:
             self.prepare_digitizing()
