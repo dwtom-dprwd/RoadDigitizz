@@ -322,7 +322,6 @@ class BufferWithCenterLine:
         self.line_layer = self.dlg.cmbLineLayer.currentData()
         self.polygon_layer = self.dlg.cmbPolygonLayer.currentData()
 
-        # Validasi layer dipilih
         if self.line_layer is None:
             QMessageBox.warning(
                 self.dlg,
@@ -346,20 +345,17 @@ class BufferWithCenterLine:
         polygon_layer = self.polygon_layer
         width = self.widthSpin.value()
 
-        # Pastikan layer dalam mode edit
         if not line_layer.isEditable():
             line_layer.startEditing()
 
         if not polygon_layer.isEditable():
             polygon_layer.startEditing()
 
-        # Bersihkan MapTool sebelumnya jika masih aktif
         if getattr(self, "map_tool", None):
             if self.iface.mapCanvas().mapTool() == self.map_tool:
                 self.map_tool.cancelDigitizing()
                 self.iface.mapCanvas().unsetMapTool(self.map_tool)
 
-        # Aktifkan Map Tool
         self.map_tool = RoadDigitizerMapTool(
             self.iface.mapCanvas(),
             line_layer,
@@ -367,7 +363,6 @@ class BufferWithCenterLine:
             width
         )
 
-        # Sinkronkan semua parameter dari toolbar
         self.map_tool.setWidth(
             self.widthSpin.value()
         )

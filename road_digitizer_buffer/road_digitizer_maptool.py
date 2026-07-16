@@ -45,11 +45,9 @@ class RoadDigitizerMapTool(QgsMapToolEmitPoint):
         self.currentMousePoint = None
         self.canvas.setFocus()
 
-        # Distance calculator
         self.dist_calculator = QgsDistanceArea()
         self._updateDistanceCalculator()
 
-        # Update jika CRS project berubah
         QgsProject.instance().crsChanged.connect(
             self._updateDistanceCalculator
         )
